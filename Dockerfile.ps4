@@ -26,6 +26,10 @@ SigLevel = Optional TrustAll
 Server = https://pacman.mydedibox.fr/pacbrew/packages/
 EOF
 
-RUN pacman -Syu --noconfirm && pacman --noconfirm -S ps4-openorbis ps4-openorbis-portlibs
+RUN ln -sf /proc/mounts /etc/mtab \
+    && pacman -Syu --noconfirm \
+    && pacman --noconfirm --needed -S \
+        $(pacman -Sg ps4-openorbis | awk '{print $2}') \
+        $(pacman -Sg ps4-openorbis-portlibs | awk '{print $2}')
 
 WORKDIR /workspace
