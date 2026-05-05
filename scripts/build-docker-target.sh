@@ -123,20 +123,29 @@ if contains_target "pfbneo" "${targets[@]}"; then
     make pfbneo.deps
 fi
 
+artifacts=()
+if [[ "$platform" == "ps4" ]]; then
+    # PS4 packages are named from CONTENT_ID, not from the target name.
+    # Clear stale packages so we can capture the package emitted by each target build.
+    find "${repo_root}/${build_dir}" -maxdepth 1 -type f -name '*.pkg' -delete
+fi
+
 for target in "${targets[@]}"; do
     make -j"$(nproc)" "${target}${artifact_suffix}"
-done
-
-find "${repo_root}/${output_dir}" -maxdepth 1 -type f -name "*.${artifact_ext}" -delete
-for target in "${targets[@]}"; do
-    artifact_path="${repo_root}/${build_dir}/src/cores/${target}/${target}.${artifact_ext}"
     if [[ "$platform" == "ps4" ]]; then
-        artifact_path="$(find "${repo_root}/${build_dir}" -maxdepth 1 -type f -name "${target}*.pkg" | head -n 1)"
+        artifact_path="$(find "${repo_root}/${build_dir}" -maxdepth 1 -type f -name '*.pkg' -printf '%T@ %p\n' | sort -n | tail -n 1 | cut -d' ' -f2-)"
+    else
+        artifact_path="${repo_root}/${build_dir}/src/cores/${target}/${target}.${artifact_ext}"
     fi
     if [[ -z "${artifact_path:-}" || ! -f "$artifact_path" ]]; then
         echo "error: expected artifact for ${target} was not produced" >&2
         exit 1
     fi
+    artifacts+=("$artifact_path")
+done
+
+find "${repo_root}/${output_dir}" -maxdepth 1 -type f -name "*.${artifact_ext}" -delete
+for artifact_path in "${artifacts[@]}"; do
     cp "$artifact_path" "${repo_root}/${output_dir}/"
 done
 

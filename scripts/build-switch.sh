@@ -31,6 +31,14 @@ Prerequisite:
 EOF
 }
 
+fix_ownership() {
+    local path="$1"
+    docker run --rm \
+        -v "${repo_root}:/workspace" \
+        alpine:3.20 \
+        sh -lc "if [ -e \"/workspace/${path}\" ]; then chown -R $(id -u):$(id -g) \"/workspace/${path}\"; fi" >/dev/null
+}
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
 image="pemu-switch-builder:latest"
@@ -76,6 +84,10 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 cd "$repo_root"
+
+fix_ownership "cmake-build"
+fix_ownership "dist"
+
 git submodule update --init --recursive
 
 if [[ "$build_image" -eq 1 ]]; then
@@ -83,6 +95,7 @@ if [[ "$build_image" -eq 1 ]]; then
 fi
 
 docker run --rm \
+    -u "$(id -u):$(id -g)" \
     -v "${repo_root}:/workspace" \
     -w /workspace \
     "$image" \
