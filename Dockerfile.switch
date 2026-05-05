@@ -1,0 +1,16 @@
+FROM devkitpro/devkita64:latest
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    cmake \
+    zip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget -O /tmp/switch-libmpv-0.39.0-3-any.pkg.tar.zst \
+    https://github.com/Cpasjuste/pacman-packages/releases/download/switch-libmpv-lua-fix/switch-libmpv-0.39.0-3-any.pkg.tar.zst \
+    && dkp-pacman -U --noconfirm /tmp/switch-libmpv-0.39.0-3-any.pkg.tar.zst \
+    && rm -f /tmp/switch-libmpv-0.39.0-3-any.pkg.tar.zst
+
+WORKDIR /workspace

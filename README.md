@@ -21,6 +21,31 @@
 - [Sony PS4](https://github.com/Cpasjuste/pemu/blob/master/.github/workflows/ps4-release.yml)
 - [Sony PS VITA](https://github.com/Cpasjuste/pemu/blob/master/.github/workflows/vita-release.yml)
 
+**<ins>Docker Builds</ins>**
+
+- This repository now includes Docker-based build entry points for PS4 and Nintendo Switch.
+- Supported host systems for these scripts are Linux and Windows.
+- Prerequisite: Docker must already be installed on the host.
+- PS4:
+  - Linux full build: `./scripts/build-ps4.sh`
+  - Linux single target: `./scripts/build-ps4.sh --target pgen`
+  - Windows full build: `powershell -ExecutionPolicy Bypass -File .\scripts\build-ps4.ps1`
+- Switch:
+  - Linux full build: `./scripts/build-switch.sh`
+  - Linux single target: `./scripts/build-switch.sh --target pgba`
+  - Windows full build: `powershell -ExecutionPolicy Bypass -File .\scripts\build-switch.ps1`
+- Output directories:
+  - `dist/ps4/` for `.pkg`
+  - `dist/switch/` for `.nro`
+- Detailed instructions:
+  - [PS4 build and install](docs/ps4.md)
+  - [Switch build and install](docs/switch.md)
+
+**<ins>Device install scope</ins>**
+
+- The PS4 and Switch documentation only covers installing the generated homebrew artifacts on devices that are already able to run them.
+- It does not cover jailbreaks, exploits, HEN setup, or any other steps required to bypass platform security.
+
 **<ins>Gamelists</ins>**
 
 - "pEMU" emulators use some "gamelist.xml" files to manage your rom files and medias (EmulationStation/Recalbox format).

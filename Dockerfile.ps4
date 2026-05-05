@@ -1,0 +1,31 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV OPENORBIS=/opt/pacbrew/ps4/openorbis
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    cmake \
+    zip \
+    pacman-package-manager \
+    makepkg \
+    libarchive-tools \
+    autoconf \
+    libtool \
+    nasm \
+    curl \
+    perl \
+    ca-certificates \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN tee -a /etc/pacman.conf >/dev/null <<'EOF'
+[pacbrew]
+SigLevel = Optional TrustAll
+Server = https://pacman.mydedibox.fr/pacbrew/packages/
+EOF
+
+RUN pacman -Syu --noconfirm && pacman --noconfirm -S ps4-openorbis ps4-openorbis-portlibs
+
+WORKDIR /workspace
